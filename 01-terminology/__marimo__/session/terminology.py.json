@@ -1,0 +1,151 @@
+{
+  "version": "1",
+  "metadata": {
+    "marimo_version": "0.23.1",
+    "script_metadata_hash": null
+  },
+  "cells": [
+    {
+      "id": "Hbol",
+      "code_hash": "e48acad3401ed2ec3427ebb3a167c5ab",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h1 id=\"understanding-artificial-intelligence\">Understanding Artificial Intelligence</h1>\n<h1 id=\"part-i-terms-and-concepts\">Part I: Terms and Concepts</h1>\n<span class=\"paragraph\">We encounter many differerent terms when reading about artificial intelligence (AI). This notebook discusses AI and large language models, but here are a few of the terms we'll come across in subsequent notebooks:</span>\n<ul>\n<li>Machine Learning</li>\n<li>Natural Language Processing</li>\n<li>Neural Nets</li>\n<li>Deep Learning</li>\n<li>Reinforcement Learniing</li>\n</ul></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "MJUe",
+      "code_hash": "7de5ff84eaf20dd4a299c64f99f32a8a",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h2 id=\"artificial-intelligence\">Artificial Intelligence</h2>\n<span class=\"paragraph\">Humans have imagined machines that behave like humans since ancient times. Our focus, however, is not the history of AI, so I'll skip over most of human history and begin in the late summer of 1955.</span>\n<h3 id=\"the-birth-of-modern-ai-research\">The Birth of Modern AI Research</h3>\n<span class=\"paragraph\">In 1955, four researchers (John McCarthy, Marvin Minsky, Nathaniel Rochester, and Claude Shannon) wrote a <a href=\"public\\McCarthy-Minksy-Rochester-Shannon-1955-AI-Paper.pdf\">proposal for a two-month workshop on artificial intelligence that would be held at Dartmouth College during the summar of 1956</a> (McCarthy et al. 1955). Their proposal outlined seven aspects of artificial intelligence that should be addressed at the conference:</span>\n<ol>\n<li>Writing computer programs to simulate \"higher functions of the human brain.\"</li>\n<li>Enabling computer programs to understand human language.</li>\n<li>Representing concepts by simulating the behavior of physiological neurons.</li>\n<li>Developing a theory that describes the complexity of a calculation.</li>\n<li>Developing machines that can learn from experience and improve their own behavior.</li>\n<li>Machines must be able to represent sensory inputs \"and other data\" as simplified abstractions, to enable faster and higher-level behavior.</li>\n<li>To be creative, some randomness must be injected into an intelligent machine's behavior.</li>\n</ol>\n<span class=\"paragraph\">The 1956 AI conference did happen and is considered to be the birth of modern AI research. The 1955 proposal is incredibly prescient. Modern AI tools incorporate all seven aspects that were discussed in the 1955 proposal.</span>\n<h3 id=\"artificial-intelligence-is-an-evolving-concept\">Artificial Intelligence is an Evolving Concept</h3>\n<span class=\"paragraph\">With the arguable exception of AI aspect #2, the 1955 AI proposal doesn't specify how artificial intelligence should be achieved or what intelligent machines should do.</span>\n<span class=\"paragraph\">In practice, it seems like we use the term <em>artificial intelligence</em> to describe tasks that humans have always been able to do, and that computers can do now but they couldn't do recently. For example, one of the early advances in AI occurred in 1959 when <a href=\"https://www.ibm.com/think/topics/history-of-artificial-intelligence\" rel=\"noopener noreferrer\" target=\"_blank\">Arthur Samuel developed a computer program that could play checkers</a>. But today, I doubt that most people think of algorithms for playing checkers when they see references to AI.</span>\n<span class=\"paragraph\">My point is that AI is an evolving term. Today when we talk about AI, we're generally NOT referring to computers that play checkers, but to a specific type of computer program called a <em>large language model</em>. AI might refer to a completely different kind of technology in the future.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "vblA",
+      "code_hash": "60cfbfbfdefd34c45bc0ea406e56fed5",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h2 id=\"large-language-models\">Large Language Models</h2>\n<span class=\"paragraph\">ChatGPT, Claude, and Gemini are just a few of the large langauge models (LLM) that are available to the general public. They appear to understand both human language and imagery. LLMs all use the same class of algorithms and similar development processes.</span>\n<span class=\"paragraph\">This series of notebooks focuses on how large language models understand and manipulate language. I will not address how LLMs intepret and generate images.</span>\n<span class=\"paragraph\">Perhaps I should have called this work <em>Understanding Large Language Models</em>, but I figured I would get more readers with the title <em>Understanding AI</em>.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "bkHC",
+      "code_hash": "b672495c515615a6e45ffadd80964494",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h2 id=\"other-terms\">Other Terms</h2></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "lEQa",
+      "code_hash": "60a4cb221f2121401b20f8cb4ad3abe7",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h3 id=\"machine-learning\">Machine Learning</h3>\n<span class=\"paragraph\">Machine learning refers to a collection of algorithms that can learn to perform tasks by evaluating training data (Stryker et al. 2026). Machine learning is a subset of AI. We'll discuss machine learning in more detail in notebook #2.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "PKri",
+      "code_hash": "335419a5c94614d9e380e80047db2414",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h3 id=\"deep-learning-and-neural-nets\">Deep Learning and Neural Nets</h3>\n<span class=\"paragraph\">Neural nets are a type of machine learning model that uses one or more layers of \"neurons\" to evaluate input. In this context, a <em>neuron</em> is type of non-linear function with several inputs and a single output that is inspired by the biological neurons in the human brain. Deep Learning refers to neural nets with many interconnected layers of neurons (Stryker et al., 2026). We'll review neural nets and deep learning in a subsequent notebook.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "Xref",
+      "code_hash": "ff1bc478eb80d17bcaef3dd8ccb0c42f",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h3 id=\"natural-langauge-processing\">Natural Langauge Processing</h3>\n<span class=\"paragraph\">Natural language processing (NLP) refers to algorithms and techniques that allow computers to process written and spoken language (Ramanathan 2026).</span>\n<span class=\"paragraph\">Today's state of the art systems for NLP, including LLMs, use deep learning to interpret and generate human language. NLP, however, predates the advent of deep learning and there are many older algorithms for NLP that did not use neural nets. For example, the worlds first chatbot, ELIZA, used relatively simple pattern matching to mimic a discussion with a psychotherapist. It was invented by a computer scientist Joseph Weizenbaum at MIT in 1966 (Korducki 2025). <a href=\"https://elizaemulator.com/\" rel=\"noopener noreferrer\" target=\"_blank\">You can chat with ELIZA yourself using this ELIZA emulator</a> (Eliza Emulator 2026).</span>\n<span class=\"paragraph\"><img src=\"https://upload.wikimedia.org/wikipedia/commons/7/79/ELIZA_conversation.png\" width=\"600\" /></span>\n<blockquote>\n<span class=\"paragraph\">Image Credit: Wikipedia</span>\n</blockquote></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "SFPL",
+      "code_hash": "b2cc1928f287736b908e910b9404035d",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h2 id=\"relationships\">Relationships</h2>\n<span class=\"paragraph\">This Venn diagram from Jain (2024) illustrates the relationship between these concepts.</span>\n<span class=\"paragraph\"><img src=\"https://miro.medium.com/v2/resize:fit:1400/format:webp/1*SkcsypxHN5T_MIXmxJKSiA.png\" width=\"600\" /></span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "BYtC",
+      "code_hash": "d1a4272685f4da9e7824b5519d317100",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h2 id=\"excercise\">Excercise</h2>\n<span class=\"paragraph\">Go to <a href=\"https://elizaemulator.com/\" rel=\"noopener noreferrer\" target=\"_blank\">https://elizaemulator.com/</a> and have a short chat with ELIZA. Also read up on the ELIZA effect.</span>\n<h3 id=\"discussion-questions\">Discussion Questions</h3>\n<ol>\n<li>What is the ELIZA effect? Do you think the ELIZA effect is real?</li>\n<li>Does the ELIZA effect apply to modern large language models?</li>\n<li>Describe how you would implement a chatbot algorithm similar to ELIZA?</li>\n</ol></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "RGSE",
+      "code_hash": "d1dfee0f8b5b485f0442f7da5745be68",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h2 id=\"references\">References</h2>\n<span class=\"paragraph\">Citations and references are per the American Statistical Association's style guide.</span>\n<span class=\"paragraph\">Eliza Emulator (2026). Online, Available at <a href=\"https://elizaemulator.com/\" rel=\"noopener noreferrer\" target=\"_blank\">https://elizaemulator.com/</a>.</span>\n<span class=\"paragraph\">Jain, P. (2024). \"Breakdown: Simplify AI, ML, NLP, Deep Learning, Computer Vision.\" Medium[online], Available at <a href=\"https://medium.com/@jainpalak9509/breakdown-simplify-ai-ml-nlp-deep-learning-computer-vision-c76cd982f1e4\" rel=\"noopener noreferrer\" target=\"_blank\">https://medium.com/@jainpalak9509/breakdown-simplify-ai-ml-nlp-deep-learning-computer-vision-c76cd982f1e4</a>.</span>\n<span class=\"paragraph\">Korducki K. M. (2025). \"This 1960s Chatbot Was a Precursor to AI. Its Maker Grew to Fear It.\" History Channel[online]. Available at <a href=\"https://www.history.com/articles/ai-first-chatbot-eliza-artificial-intelligence-precursor-llms\" rel=\"noopener noreferrer\" target=\"_blank\">https://www.history.com/articles/ai-first-chatbot-eliza-artificial-intelligence-precursor-llms</a>.</span>\n<span class=\"paragraph\">McCarthy, J., Minsky, M. L., Rochester, N., Shannon, C. E. (1955), \"A Proposal for the Dartmouth Summer Research Project on Artificial Intelligence\". <a href=\"public\\McCarthy-Minksy-Rochester-Shannon-1955-AI-Paper.pdf\">A summary was published in AI Magazine, 27(4), 12-14.</a></span>\n<span class=\"paragraph\">Ramanathan, T. (2026, March 11). \"Natural Language Processing.\" Encyclopedia Britannica[online], Available at <a href=\"https://www.britannica.com/technology/natural-language-processing-computer-science\" rel=\"noopener noreferrer\" target=\"_blank\">https://www.britannica.com/technology/natural-language-processing-computer-science</a></span>\n<span class=\"paragraph\">Stryker, C., Lee, F., Bergmann D., Scapicchio M. (2026), \"2026 Guide to Machine Learning\", IBM[online], Available at <a href=\"https://www.ibm.com/think/machine-learning#605511093\" rel=\"noopener noreferrer\" target=\"_blank\">https://www.ibm.com/think/machine-learning#605511093</a>.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "Kclp",
+      "code_hash": "1d0db38904205bec4d6f6f6a1f6cec3e",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "emfo",
+      "code_hash": null,
+      "outputs": [],
+      "console": []
+    }
+  ]
+}
