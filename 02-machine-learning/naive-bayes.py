@@ -474,7 +474,7 @@ def _(calculate_probability, math, n_ham, n_spam, train_data, vocab):
             )
         return score
 
-    return get_class_score, prob_ham, prob_spam
+    return (get_class_score,)
 
 
 @app.cell(hide_code=True)
@@ -591,7 +591,7 @@ def _(dataclasses):
         def accuracy(self) -> float:
             """Accuracy metric."""
             return (self.true_positives + self.true_negatives) / (self.total)
-    
+
         @property
         def precision(self) -> float:
             """Precision metric."""
@@ -606,7 +606,7 @@ def _(dataclasses):
         def f1(self) -> float:
             """F1 metric."""
             return 2 / ((1/self.precision) + (1/self.recall))
-    
+
 
     return (Results,)
 
@@ -753,7 +753,7 @@ def _(mo):
     ## Machine Learning Concepts
     A machine learning algorithm is an algorithm that learns how to complete a task by examining data. In this exercise our naive Bayes spam filter examined a dataset containing both spam and non-spam messages and chose parameters based on the datatase.
 
-    #### Classification, Regression, and Generation
+    ### Classification, Regression, and Generation
     The naive Bayes model in this exercise is a *classification* model. It assigns an input (text message) to a class (ham or spam). There are many types of classification models. They can use many different types of input, including text, numbers, audio files, and imagery.
 
     Many models are *regression* models. Regression models generate a numeric value. A machine learning model that attempts to predict how many district ranking a points an FRC team will earn would be a regression model.
@@ -771,7 +771,10 @@ def _(mo):
     ### Parameters
     Parameters are numbers that are part of a machine learning model that are adjusted during the training process. In this exercise the parameters are the word counts.
 
-    #### Generalize
+    ### Hyperparameters
+    ...
+
+    ### Generalize
     *Generalize* refers to a model's performance on various kinds of input. A model that performs well on training data but performs poorly on inputs it hasn't seen before generalizes poorly.
 
     | Concept | Description |
@@ -794,205 +797,287 @@ def _(mo):
     return
 
 
-@app.cell
-def _():
-    return
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    ## Naive Bayes Theory (Optional)
+    The rest of this notebook discusses the theory behind the NB algorithm -- how and why it works. This material isn't required for understanding follow-on topics, so you can skim it or skip it if you like.
 
+    ### Word Probabilities
+    The NB algorithm estimates probabilities that specific words will appear in ham or spam messages during training. Then during inference it uses the word probabilities to estimate the likelihood that a message is ham or spam.
 
-@app.cell
-def _():
-    return
+    Before we proceed further, let's define our notation for talking about word probabilities.
 
-
-@app.cell
-def _():
+    $$ \begin{align}
+        w &\coloneq \textrm{A variable that represents a single word} \\
+        n_w &\coloneq \textrm{The number of text messages that contain word } w \\
+        M &\coloneq \textrm{The set of unique words in a message} \\
+        P(w \in M) &\coloneq \textrm{Probability that the word } w \textrm{ appears in message } M \\
+        P(w \notin M) &\coloneq \textrm{Probability that the word } w \textrm{ does NOT appear in message } M \\
+        P(w \in M) &=  \frac{n_w}{N} \\
+        P(w \notin M) &= 1 - P(w \in M)
+    \end{align} $$
+    """)
     return
 
 
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    ## Some Statistics Terminolgy
+    ### Conditional Probabilities
+    The word probabilities in the previous section are *unconditional* probabilities. That is, they ignore the condition of whether a message is ham or spam. A close inspection of the NB training code reveals that it doesn't calculate any unconditional probabilities. The NB training code calculates separate word probabilities for ham and spam messages. Probabilities that depend on some condition (like whether a message is ham or spam) are called *conditional* probabilities.
 
-    Naive Bayes is a classification model, which means it assigns messages to different categories, or *classes*. In this example we have two classes, spam and ham. Per equation (1), we're using the random variable $C$ to represent the class of a message.
+    Here is our notation for conditional word probabilities.
 
-    $$ C \coloneq \textrm{message class, either "ham" or "spam"} \tag{1} $$
+    $$ \begin{align}
+        n_w^\textrm{ham} &\coloneq \textrm{The number of ham messages that contain the word } w \\
+        n_w^\textrm{spam} &\coloneq \textrm{The number of spam messages that contain the word } w \\
+        P(w \in M \;|\; \textrm{ham}) &\coloneq \textrm{Probability that message } M \textrm{ contains word } w \textrm{ given that message } M \textrm{ is a ham message} \\
+        P(w \in M \;|\; \textrm{spam}) &\coloneq \textrm{Probability that message } M \textrm{ contains word } w \textrm{ given that message } M \textrm{ is a spam message} \\
+        P(w \notin M \;|\; \textrm{ham}) &\coloneq \textrm{Probability that message } M \textrm{ does not contain word } w \textrm{ given that message } M \textrm{ is a ham message} \\
+        P(w \notin M \;|\; \textrm{spam}) &\coloneq \textrm{Probability that message } M \textrm{ does not contains word } w \textrm{ given that message } M \textrm{ is a spam message} \\
+        P(w \in M \;|\; \textrm{ham}) &= n_w^\textrm{ham} / N_\textrm{ham} \\
+        P(w \in M \;|\; \textrm{spam}) &= n_w^\textrm{ham} / N_\textrm{spam} \\
+        P(w \notin M \;|\; \textrm{ham}) &= 1 - P(w \in M \;|\; \textrm{ham}) \\
+        P(w \notin M \;|\; \textrm{spam}) &= 1 - P(w \in M \;|\; \textrm{spam})
+    \end{align} $$
 
-    FYI, the symbol $\coloneq$ indicates a definition. In the first statement we're defining the random variable variable $C$
+    The vertical bar character ('|') indicates that a probability is a conditional probability. It's often called a *pipe*. The expression on the left side of the pipe is the item for which we are calculating the probability, and the expression on the right is the condition that the probability depends on.
+    """)
+    return
 
-    /// admonition | Advanced Concept
-    In statistics, random variables are represented with capitol letters. The whole point of a random variable is that we don't know it's actual value -- it's like the value of a die roll *before* we roll the die. So $C$ represents the class of a message before we know whether it's spam or ham. We use lowercase variables to represent known values. So we could use the variable $c$ to represent the class of a message when we know what the class is.
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    ### Probabilities for Multiple Words at Once
+    Probabilities for individual words appearing in text messages are useful, but most text messages consist of more than one word. What is the probability that the words "Don't", "forget", "to", "buy", "bread", "." and NO other words appear in a text message?
+
+    To figure that out, we're going to make two simplifing assumptions.
+    1. The order of words doesn't matter. So the NB algorithm considers "Don't forget to buy bread" and "Don't buy bread to forget" to be identical text messages. Models that ignore word order are called *Bag of Words* models.
+    2. The probability of a word appearing in a message is independent of the the other words in the message. In reality this isn't true. It's likely that text messages that contain the word "peanut" are more likely to contain the word "butter" or "sandwich" than other messages. In fact, this assumption is why the algorithm is called NAIVE Bayes.
+
+    Regardless, the algorithm works surprisingly well in spite of these simplifications.
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    Here is some more notation that we'll need to calculate probabilities of groups of words appearing in a message.
+
+    $$ \begin{align}
+        V &\coloneq \textrm{The model's vocabulary, i.e., the number of words in the training data} \\
+        |V| &\coloneq \textrm{The number of words in the model's vocabulary} \\
+        i &\coloneq \textrm{An index variable that ranges from 1 to } |V| \\
+        M &\coloneq \textrm{The set of unique words in a message} \\
+        |M| &\coloneq \textrm{The number of unique words in a message} \\
+        j &\coloneq \textrm{An index variable that ranges from 1 to } |M| \\
+        w_j &\coloneq \textrm{A variable that represents the jth unique word in a message.} \\
+        P(\{w_1, w_2, ..., w_j\} \in M) &\coloneq \textrm{Probability that the words } \{w_1, w_2, ..., w_j\} \textrm{ and NO OTHER WORDS appear in message } M \\
+    \end{align} $$
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    Ok, here we go.
+
+    $$ \begin{align}
+    x_i \coloneq \textrm{Indicator variable that equals 1 if } w_i \textrm{ is in message } M \textrm{ and 0 otherwise} \\
+    P(\{w_1, w_2, ..., w_i\} \in M \;|\; \textrm{ham/spam}) = \Pi_i^{|V|} P(w_i \in M \;|\; \textrm{ham/spam})^{x_i}P(w_j \notin M \;|\; \textrm{ham/spam})^{1 - x_i}
+    \end{align} $$
+
+    The capitol Pi letter, $\Pi$, indicates a product. The preceding equation says that for every unique word in the text message, we should calculate the probability of that word appearing in a message and then multiply all those probabilities together. Then for ever word in the training data (the vocabulary) that did NOT appear in the message, we should multiply the product with the probabilities of those words NOT appearing in the message. We end up with the probability of that exact set of words appearing in a message.
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    ### Flipping the Probability with Bayes Theorem
+    #### What's Bayes Theorem?
+    We can calculate $P(\{w_1, w_2, ..., w_i\} \in M \;|\; \textrm{spam})$, but what we really want is this:
+
+    $$ P( \textrm{spam} \;|\; \{w_1, w_2, ..., w_i\} \in M)$$
+
+    We have the probability that a message contains specific words given that it's spam, but what we want is the probability that a message is spam given that it contains specific words. Notationally, we just swap the expressions on the left and right side of the pipe.
+
+    *Bayes Theorem* allows us to express $P(a \;|\; b)$ in terms of $P(b \;|\; a)$.
+
+    $$ P(a \;|\; b) = \frac{P(b \;|\; a)P(a)}{P(b)} $$
+
+    Here's a numeric example from the [statology.org website](https://www.statology.org/bayes-theorem-explained-simply/). You are a doctor trying to determine if someone has the flu given that they have a cough. (The following numbers are all made up.)
+
+    * $P(A)$ is the probability that someone in the general population has the flu. This is called the *prior probability*. $P(A) = 0.1$
+    * The likelihood of having a cough if you have the flu, $P(B \;|\; A)$ is 0.8.
+    * The total probability of having a cough (for any reason, not just the flu) is $P(B) = 0.3$
+
+    $$ P(a \;|\; b) = \frac{P(b \;|\; a)P(a)}{P(b)} = \frac{0.8 \times 0.1}{0.3} = 0.267$$
+
+    In general, $P(a \;|\; b) \neq P(b \;|\; a)$. That's evident in this example, where $P(a \;|\; b) = 0.267$ and $P(b \;|\; a) = 0.8$.
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    #### Applying Bayes Theorem to Spam Probabilities
+
+    Here's what we want (using the notation that was introduced earlier in this notebook):
+
+    $$ \begin{align}
+    P(\textrm{spam} \;|\; \{w_1, w_2, ..., w_j\} \in M) &\coloneq \textrm{Probability that message } M \textrm{ is spam given that it contains specific words } \\
+    P(\textrm{ham} \;|\; \{w_1, w_2, ..., w_j\} \in M) &\coloneq \textrm{Probability that message } M \textrm{ is ham given that it contains specific words} \\
+    \end{align} $$
+
+    To predict whether a message $M$ is spam or ham, we calculate both probabilities and predict the class with the highest probability.
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    If we plug our probabilities into Bayes theorem, we get the following:
+
+    $$ \begin{align}
+        P(\textrm{spam} \;|\; \{w_1, w_2, ..., w_j\} \in M) &= \frac{P(\{w_1, w_2, ..., w_j\} \in M \;|\; \textrm{spam}) \cdot P(\textrm{spam})}{P(\{w_1, w_2, ..., w_j\})} \\
+        P(\textrm{ham} \;|\; \{w_1, w_2, ..., w_j\} \in M) &= \frac{P(\{w_1, w_2, ..., w_j\} \in M \;|\; \textrm{ham}) \cdot P(\textrm{ham})}{P(\{w_1, w_2, ..., w_j\})}
+    \end{align}$$
+
+    Look at the two preceding equations. Can you see a way to simplify the math?
+    * We don't care about the exact probabilities that these two equations generate. We just want to pick the class (spam or ham) that has the higher probability.
+    * Both equations have the exact same denominator.
+    * The denominator is a probability, so it is a postive value ranging from 0 to 1.
+
+    Dropping the denominator from both equations won't change which class has the higher value. But we're calculating a class score instead of an actual probability, so we'll use $S()$ instead of $()$.
+
+    $$ \begin{align}
+        S(\textrm{spam} \;|\; \{w_1, w_2, ..., w_j\} \in M) &= P(\{w_1, w_2, ..., w_j\} \in M \;|\; \textrm{spam}) \cdot P(\textrm{spam}) \\
+        S(\textrm{ham} \;|\; \{w_1, w_2, ..., w_j\} \in M) &= P(\{w_1, w_2, ..., w_j\} \in M \;|\; \textrm{ham}) \cdot P(\textrm{ham})
+    \end{align}$$
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    /// admonition | Definition
+    In Bayesian statistics, $P(\textrm{spam})$ and $P(\textrm{ham})$ are called *prior* probabilities. They are the probabilities of a message being ham or spam that we would use **prior** to looking at words in the message.
+    ///
+    Calculating $P(\textrm{spam})$ and $P(\textrm{ham})$ is easy. It's just the number of spam or ham messages divided by the total number of messages in the training dataset, which we aready did in section ??.
+
+    We calculated $P(\{w_1, w_2, ..., w_i\} \in M \;|\; \textrm{ham/spam})$ in section ??. So putting it all together, we get:
+
+
+    $$ \begin{align}
+        S(\textrm{spam} \;|\; \{w_1, w_2, ..., w_j\} \in M) &=  \prod_j^{|V|} P(x_j = 1 \, | \, \textrm{spam})^{x_j} P(x_j = 0 | c)^{1-x_j} \cdot n_{\textrm{spam}} / N\\
+        S(\textrm{ham} \;|\; \{w_1, w_2, ..., w_j\} \in M) &=  \prod_j^{|V|} P(x_j = 1 \,|\, \textrm{ham})^{x_j} P(x_j = 0 | c)^{1-x_j} \cdot n_{\textrm{ham}} / N
+    \end{align} $$
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    $$ \begin{align}
+        S(\textrm{spam} \;|\; \{w_1, w_2, ..., w_j\} \in M) &=  \prod_j^{|V|} \left[ \left(\frac{n_{w_j}^{\textrm{spam}}}{N_\textrm{spam}}\right)^{x_j} \cdot \left(1 - \frac{n_{w_j}^{\textrm{spam}}}{N_\textrm{spam}}\right)^{1-x_j} \cdot \frac{n_{\textrm{spam}}}{N} \right] \\
+        S(\textrm{spam} \;|\; \{w_1, w_2, ..., w_j\} \in M) &=  \prod_j^{|V|} \left[ \left(\frac{n_{w_j}^{\textrm{spam}}}{N_\textrm{ham}}\right)^{x_j} \cdot \left(1 - \frac{n_{w_j}^{\textrm{ham}}}{N_\textrm{ham}}\right)^{1-x_j} \cdot \frac{n_{\textrm{ham}}}{N} \right] \\
+    \end{align} $$
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    ### Laplace and the Vocabulary Problem
+    1. What happens if a message contains a word that does not occur in any of our spam or ham training messages?
+    2. Is this likely to happen when we use our spam filter?
+
+    **Answers**
+    1. If a message doesn't occur in any spam or any ham messages, then $n_{w_j}^{\textrm{spam}}$ and/or $n_{w_j}^{\textrm{ham}}$ will be zero, and the resulting score will be zero.
+    2. Yes, it will happen all the time. Many messages will contain URLs, phone numbers, brand names, a person's name, or even mistyped words that dont' exist in our training data.
+
+    No words actually have zero probability of appearing in a text message. The problem is that we only have so much training data, so it's practically impossible to assemble a training data set that contains every word that could possibly appear. This problem is called the *Vocabulary Problem*. It's a problem for most natural language processing techniques, not just Naive Bayes. Most Naive Bayes algorithms use *Laplace Smoothing* to solve this problem.
+
+    /// admonition | Reference
+    Brenndoerfer M., *The Vocabulary Problem: Why World-Level Tokenization Breaks Down.* https://mbrenndoerfer.com/writing/vocabulary-problem-subword-tokenization-challenges. Accessed on 25 April 2026.
+    ///
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    #### Laplace Smoothing
+    Suppose we are trying to predict whether the following message is spam:
+    > Get the best deals at Mortimer's Used Cars!
+
+    Also suppose that all the words in the message appear in both ham and spam training messages, except for "Mortimer." How can we deal with this? We could just remove the word "Mortimer" from the message and not calculate a probability for it, but most NB algorithms use a technique called Laplace smoothing to deal with unknown words.
+
+    Let's pretend that our training data DID actually contain one spam message and one ham message with the word "Mortimer." Then the word probabilities would be:
+
+    $$ P(\textrm{Mortimer} \,|\, \textrm{ham/spam}) = \frac{1}{N_{\textrm{ham/spam}} + 2} $$
+
+    So when we're predicting whether a message is spam or ham, for every word that appears in the message, we pretend that our training dataset contained two additional messages that contained that word, one ham message, and one spam message. Consequently, no words will have zero probability. This technique is called Laplace smoothing.
+
+    So we update our equations for ham and spam scores like so:
+
+    $$ \begin{align}
+        S(\textrm{spam} \;|\; \{w_1, w_2, ..., w_j\} \in M) &=  \prod_j^{|V|} \left[ \left(\frac{n_{w_j}^{\textrm{spam}} + 1}{N_\textrm{spam} + 2} \right)^{x_j} \cdot \left(1 - \frac{n_{w_j}^{\textrm{spam}} + 1}{N_\textrm{spam} + 2}\right)^{1-x_j} \cdot \frac{n_{\textrm{spam}}}{N} \right] \\
+        S(\textrm{ham} \;|\; \{w_1, w_2, ..., w_j\} \in M) &=  \prod_j^{|V|} \left[ \left(\frac{n_{w_j}^{\textrm{ham}} + 1}{N_\textrm{ham} + 2}\right)^{x_j} \cdot \left(1 - \frac{n_{w_j}^{\textrm{ham}} + 1}{N_\textrm{ham} + 2}\right)^{1-x_j} \cdot \frac{n_{\textrm{ham}}}{N} \right] \\
+    \end{align} $$
+
+    /// admonition | Reference
+    Wikipedia. *Additive Smoothing.* https://en.wikipedia.org/wiki/Additive_smoothing. Accessed on 25 April 2026.
+    ///
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    ### The Limits of Floating Point Math
+    Most words in our model's vocabulary will have very small probabilities of occurring. For a long text message, multiplying the small probabilities for each word will result in an extremely small score. In fact, the score might be too small for the computer's CPU to represent. For a 64-bit number, the smallest number that can be represented is about $2.2 \times 10^{-308}$. This phenomenon is called underflow.
+
+    This problem is easy to fix. First we'll modify our score functions by taking the logarithm of the score.
+
+    $$ \begin{align}
+        S(\textrm{spam} \;|\; \{w_1, w_2, ..., w_j\} \in M) &=  \log \left(\prod_j^{|V|} \left[\left(\frac{n_{w_j}^{\textrm{spam}} + 1}{N_\textrm{spam} + 2} \right)^{x_j} \cdot \left(1 - \frac{n_{w_j}^{\textrm{spam}} + 1}{N_\textrm{spam} + 2}\right)^{1-x_j}  \right] \cdot \frac{n_{\textrm{spam}}}{N} \right) \\
+        S(\textrm{ham} \;|\; \{w_1, w_2, ..., w_j\} \in M) &= \log \left( \prod_j^{|V|} \left[ \left(\frac{n_{w_j}^{\textrm{ham}} + 1}{N_\textrm{ham} + 2}\right)^{x_j} \cdot \left(1 - \frac{n_{w_j}^{\textrm{ham}} + 1}{N_\textrm{ham} + 2}\right)^{1-x_j}  \right] \cdot \frac{n_{\textrm{ham}}}{N}\right) \\
+    \end{align} $$
+
+    /// admonition | Reminder
+    $x_j$ is an indicator variable that is 1 if word $w_j$ is in the text message and 0 if it is not.
     ///
 
-    The syntax $P(X = x)$ in statistics means *the probability that random variable $X$ will assume the value $x$*. So $P(C = \textrm{spam})$ means *the probability that the message is spam.*
+    A convenient thing about logarithms is that the logarithm of a product of many terms is equal to the sum of the logarithms of the individual terms. So the final versions of our scoring functions becomes:
 
     $$ \begin{align}
-        P(C = \textrm{spam}) &\coloneq \textrm{Probability that a message is spam} \tag{2} \\
-        P(C = \textrm{ham}) &\coloneq \textrm{Probability that a message is not spam} \tag{3}
+        S(\textrm{spam} \;|\; \{w_1, w_2, ..., w_j\} \in M) &=  \sum_j^{|V|} \left[{x_j}\log \left(\frac{n_{w_j}^{\textrm{spam}} + 1}{N_\textrm{spam} + 2} \right) + (1-x_j) \log \left(1 - \frac{n_{w_j}^{\textrm{spam}} + 1}{N_\textrm{spam} + 2}\right)  \right]  + \log \left( \frac{n_{\textrm{spam}}}{N} \right) \\
+        S(\textrm{ham} \;|\; \{w_1, w_2, ..., w_j\} \in M) &=  \sum_j^{|V|} \left[{x_j}\log \left(\frac{n_{w_j}^{\textrm{ham}} + 1}{N_\textrm{ham} + 2} \right) + (1-x_j) \log \left(1 - \frac{n_{w_j}^{\textrm{ham}} + 1}{N_\textrm{ham} + 2}\right)  \right]  + \log \left( \frac{n_{\textrm{ham}}}{N} \right)
     \end{align} $$
 
-    Since we already counted the number of spam and ham messages in our dataset, we can easily calculate the probabilities that a message is spam or ham.
-    """)
-    return
+    These are the equations that are implemented in our Python code. The base of the logarithms doesn't matter -- you can use base 2, base 10, natural logs, whatever.
 
-
-@app.cell(hide_code=True)
-def _(mo, prob_ham, prob_spam):
-    mo.md(rf"""
-    $$ P(c = \textrm{{ham}}) = {prob_ham:.4f} \tag{4} $$
-    $$ P(c = \textrm{{spam}}) = {prob_spam:.4f} \tag {5} $$
-
-
-    So if we receive a text message and we don't bother to read it, we would estimate that there is an 86% probability that the message is ham, and a 14% probability that it's spam. In Bayesian statistics, we would call these *prior probabilities*.
-
-    Another way to look at this is that if we made a model that always guessed a message is ham, it would be right 86% of the time. That's a passing score on most exams, but obviously we need to try to do better.
-    """)
-    return
-
-
-@app.cell(hide_code=True)
-def _(mo):
-    mo.md(r"""
-    As you may have guessed from our word counting activities, we're going to improve our classification model by considering the words that appear in each message. So it's time for more math symbols.
-
-    $$ \begin{align}
-        W & \coloneq \textrm{Random variable representing a word that could appear in a message} \tag{6} \\
-        w & \coloneq \textrm{A specific word that is known to be in a message} \\
-        i & \coloneq \textrm{Subscript showing the position of a word in a message} \tag{7} \\
-        w_i & \coloneq \textrm{The ith word in a message.} \tag{8} \\
-        P(W_i = w) &\coloneq \textrm{Probability that the ith word in a message is some specific word } w
-    \end{align} $$
-
-    So for a message like "Don't forget to buy bread"
-
-    $$ \begin{align}
-        w_0 &= \textrm{Don't}  \tag{9} \\
-        w_1 &= \textrm{forget} \tag{10} \\
-        w_2 &= \textrm{to} \tag{11} \\
-        w_3 &= \textrm{buy} \tag{12} \\
-        w_4 &= \textrm{bread} \tag{13} \\
-    \end{align} $$
-    """)
-    return
-
-
-@app.cell(hide_code=True)
-def _(mo):
-    mo.md(r"""
-    ## Estimating Word Probabilities
-    Knowing the exact probability of a word appearing in a text message would require that we have a dataset containing every text message that has been sent, and that will be sent in the future. Obviously that's impossible. But we can estimate probabilities using our training dataset.
-
-    $$ \begin{align}
-        P(W = w) &\coloneq \textrm{Probability that word } w \textrm{ appears in a message.} \\
-        n_w &\coloneq \textrm{Number of messages in which word } w \textrm{ appears} \\
-        N &\coloneq \textrm{Total number of messages in training dataset (both spam and ham)} \\
-        P(W = \textrm{w}) &\approx n_w / N
-    \end{align} $$
-
-    Let's estimate the probability of the word "Don't appearing in a text message."
+    Since
     """)
     return
 
 
 @app.cell
-def _(dataset, ham_counts, spam_counts):
-    N = len(dataset)
-
-    def show_word_probability(word):
-        word_count = ham_counts.get(word, 0) + spam_counts.get(word, 0)
-        print(f"Occurrences of the word {word}:")
-        print("\tHam message count:", ham_counts.get(word, 0))
-        print("\tSpam message count:", spam_counts.get(word, 0))
-        print("\tTotal Count:", word_count)
-        print("\nTotal Messages:", N)
-        word_prob = word_count / N
-        print(f"P(w = '{word}') = {word_prob:.5f}")
-
-    show_word_probability("Don't")
-    return
-
-
-@app.cell(hide_code=True)
-def _(mo):
-    mo.md(r"""
-    ## Conditional Probabilities
-    The main premise of a Naive Bayes spam classifier is that some words are more likely to occur in spam messages than in ham messages, and vice-versa. So it's nice to know that the probability of the word *Don't* occurring in a text message is about 0.5%, but what we really want to know know is what is the probability of it occurring in spam or ham messages. We use conditional probabilities to represnt this mathematically.
-
-    $$ \begin{align}
-        P(W = \textrm{Don't} \; | \; C = \textrm{ham}) \coloneq \textrm{Probability of "Don't" occurring in a ham message} \\
-        P(W = \textrm{Don't} \; | \; C = \textrm{spam}) \coloneq \textrm{Probability of "Don't" occurring in a spam message}
-    \end{align} $$
-
-    $P(X = x)$ still refers to the probability that event $x$ will occur. The pipe, or vertical bar symbol ($|$) can be read as "given that". In statistics, when you see the syntax $P(X = x \; | \; Y = y)$ it means the probability of event $x$ occurring given that $y$ has already occurred.
-    """)
-    return
-
-
-@app.cell
-def _(ham_counts, n_ham, n_spam, spam_counts):
-    def calc_ham_prob(word):
-        count = ham_counts.get(word, 0)  # Count is zero if word not in dictionary
-        return count / n_ham
-
-    def calc_spam_prob(word):
-        count = spam_counts.get(word, 0)  # Count is zero if word not in dictionary
-        return count / n_spam
-
-    _word = "Don't"
-    calc_ham_prob(_word), calc_spam_prob(_word)
-    return
-
-
-@app.cell(hide_code=True)
-def _(mo):
-    mo.md(r"""
-    ## Flip the Probs
-    It's easy to estimate the probability of a word occurring in a message given that it's spam or ham. But what we really need is the probability that a message is spam or ham given that it contains one or more specific words. We have $P(W = W \;|\; C = c)$, but we need $P(C = c \;|\; W = w)$. Fortunately there is a simple formula to calculate $P(C = c \;|\; W = w)$ given $P(W = w \;|\; C = c)$. It's called *Bayes Theorem.*
-
-    $$ P(C = c \;|\; W = w) = \frac{P(W = w \;|\; C = c) \cdot P(C = c)}{P(W = w)} $$
-
-    ## But Messages Have More Than One Word
-    The probability that a spam message contains a word lke "Hey" is just the number of spam messages that contain "Hey" divided by the total number of spam messages. That's easy. But what's the probability that a message contains both the words "Hey" and "there"?
-
-    Here's where we make two big simplifying assumptions.
-    1. We assume that the order of the words in the text doesn't matter. Models that use this assumption are called *bag-of-words* models.
-    2. We're going to assume that the probability of any word appearing in a message is completely independent of all other words in the message.
-
-    These assumptions are obviously not true. We know that changing the order of words can drastically change the meaning of a sentence, and I suggest that any message containing the word "apple" is more likely to contain the word "pie" than most other messages. The second assumption is why the algorithm is called *Naive.*
-    """)
-    return
-
-
-@app.cell(hide_code=True)
-def _(mo):
-    mo.md(r"""
-    /// admonition | Abbreviated Syntax
-    We're going to abbreviate the probability syntax.
-    $$P(c \;|\; w) \coloneq P(C = c \;|\; W = w) $$
-    ///
-
-    Anyway, with these two assumptions in place, then the probability of a set of $m$ words appearing in a message is:
-
-    $$ P(c \;|\; (w_0, w_1, ..., w_m)) = \frac{P(c)\prod_j^{|V|} P(x_j = 1 | c)^{x_j} P(x_j = 0 | c)^{1-x_j}}{P(w_0, w_1, ..., w_m)}$$
-
-    $|V|$ is the number of words in our vocabulary. The vocabulary $V$ is the set of words that appeared in the training data set.
-
-    $x_j$ is an indicator variable. $x_j = 1$ if $w_j$ is in the message and $x_j = 0$ if $w_j$ is not in the message.
-    """)
-    return
-
-
-@app.cell(hide_code=True)
-def _(mo):
-    mo.md(r"""
-    $$ \begin{align}
-        N_{ham} &\coloneq \textrm{Number of ham messages in training data} \\
-        N_{spam} &\coloneq \textrm{Number of spam messages in training data} \\
-        P(\textrm{ham}) &\coloneq \textrm{Probability that a message is ham} \\
-        P(\textrm{spam}) &\coloneq \textrm{Probability that a message is sam} \\
-        P(\textrm{ham}) &= N_{ham}
-    \end{align} $$
-    """)
+def _():
     return
 
 
